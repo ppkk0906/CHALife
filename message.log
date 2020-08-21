@@ -1,0 +1,5 @@
+START LOG
+2020-08-21 11:10 [SEVERE] [main] severe Log
+2020-08-21 11:10 [WARNING] [main] warning Log
+2020-08-21 11:10 [INFO] [main] info Log
+END LOG
