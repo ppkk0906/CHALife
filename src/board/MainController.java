@@ -72,7 +72,7 @@ public class MainController extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		requestPro(request, response);
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -81,38 +81,37 @@ public class MainController extends HttpServlet {
 		requestPro(request, response);
 	}
 	private void requestPro (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		String view="main", action=null, URI=request.getRequestURI(), path=null;
+		String firstURI="main", others=null, URI=request.getRequestURI(), path=null;
 		String projectPath=request.getContextPath();
 		CommandProcess com = null;
 		PrintWriter out = response.getWriter();
 		String commandRaw=URI.substring(projectPath.length()); //우선 URI를 뽑고
-		String urlPatterns="/main/";
+		String urlPatterns="/main";
 		try {
-			commandRaw=commandRaw.substring(urlPatterns.length()); // "main/" 뒷부분만 뽑아낸다
-			if(commandRaw.equals("")) {path="/bbs/main.jsp";}
-			if(commandRaw.indexOf("/")!=-1) { //명령의 이름을 명시한 부분 뒤에 추가적으로 명시된 부분이 있다면
-				view = commandRaw.substring(0, commandRaw.indexOf("/")); // 첫"/"를 기준으로 앞부분을 view로 한다
-			}else { //URL에 보드의 이름만 지정된 경우 commandRaw를 그대로 가져다 쓴다
-				view = commandRaw;
+			commandRaw=commandRaw.substring(urlPatterns.length()); // "/main" 뒷부분만 뽑아낸다
+			if(commandRaw.equals("")||commandRaw.equals("/")) { //명령의 이름이 명시됐지 않았다면
+			path="/bbs/main.jsp";
+			}else {//명령의 이름이 명시됐다면?
+				firstURI=commandRaw.substring(1);//우선 첫번째 "/"를 잘라낸다
+				if(firstURI.lastIndexOf("/")!=-1) {// 잘라냈는데도 입력한 uri에 "/"가 하나 이상 포함된다면 
+					others=firstURI.substring(firstURI.indexOf("/")+1); // 첫"/"의 오른쪽은 action으로
+					firstURI=firstURI.substring(0,firstURI.indexOf("/")); // 첫"/"의 왼쪽은 firstURI로지정한다
+				}
 			}
-			if(commandRaw.indexOf("/")!=-1) {//뒷부분을 action으로 지정한다
-				action = commandRaw.substring(commandRaw.indexOf("/")+1);
-				if(action.indexOf("/")!=-1) {// view/action/*의 경우 이 *를 생략
-					action = action.substring(0,action.indexOf("/")); 
-			}}
-			out.print("<br>"+view+"<br>");
-			com = (CommandProcess)commandMap.get(view);
+			com = (CommandProcess)commandMap.get(firstURI);
 			if(com!=null) {
-			out.print("<br>"+com+"<br>");
-			path=com.requestPro(request,response);
+			request.setAttribute("others", others);
+			path=com.requestPro(request,response); //맵핑된 클래스를 찾았다면
 			}else {
-				path="/404/";
+				path="/404/"; //맵핑된 클래스를 못찾았다면
 			}
 		}catch(Throwable e) {
 			throw new ServletException(e);
 		}
-		RequestDispatcher dispatcher =request.getRequestDispatcher(path);
-		dispatcher.forward(request, response);
+		out.print("<br>path:"+path);
+		out.print("<br>firstURI:"+firstURI);
+		out.print("<br>others:"+others);
+		//RequestDispatcher dispatcher =request.getRequestDispatcher(path);
+		//dispatcher.forward(request, response);
 	}
-
 }
