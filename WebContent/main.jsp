@@ -19,9 +19,12 @@
 
 						<!-- Header -->
 							<header id="header">
-								아이디: <input type="email" id="email" name="email" placeholder="아이디를 입력하세요" required>
-								패스워드: <input type="password" name="userPassword" placeholder="패스워드를 입력하세요" required>
-								로그인: <input type="submit" value="로그인">
+							<form method=post action="<%=projectPath %>/login">
+								아이디: <input type="text" id="id" name="id" placeholder="아이디를 입력하세요" required>
+								패스워드: <input type="password" name="pw" placeholder="패스워드를 입력하세요" required>
+								<input type="submit" value="로그인">
+								<input type="button" value="회원가입" onclick="window.location.href='<%=projectPath%>/main/join';"> 
+								</form>
 							</header>
 
 						<!-- Banner -->

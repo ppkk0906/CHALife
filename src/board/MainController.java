@@ -111,7 +111,7 @@ public class MainController extends HttpServlet {
 			dispatcher =request.getRequestDispatcher(path);
 			dispatcher.forward(request, response);
 		}else{
-				//response.sendRedirect(projectPath+"/404");
+				response.sendRedirect(projectPath+"/404");
 				return;
 		}
 		}catch(Throwable e) {

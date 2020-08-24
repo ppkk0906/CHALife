@@ -12,6 +12,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+
 public class UserDBBean {
 	
 	private static UserDBBean instance = new UserDBBean();
@@ -43,8 +44,8 @@ public class UserDBBean {
         }
     }
     //현재 회원수를 구하는 메소드
-    public String getUserMax() {
-    	String r="";
+    public int getUserMax() {
+    	int r=9999;
     	Connection conn=null;
     	PreparedStatement pstmt=null;
     	ResultSet rs = null;
@@ -54,7 +55,7 @@ public class UserDBBean {
     		pstmt=conn.prepareStatement(sql);
     		rs=pstmt.executeQuery();
     		rs.first();
-    		r=rs.getString(1);
+    		r=rs.getInt(1);
     	}catch(Exception e) {
     		e.printStackTrace();
     	}
@@ -62,22 +63,31 @@ public class UserDBBean {
     }
     
     //회원 가입 처리에 사용하는 메소드
-    public byte join(UserDataBean u) {
+    public String join(UserDataBean u) {
         Connection conn = null;
         PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		byte r=0;
-		int number=0; //user_index에 들어갈 번호
+		String r=null;
 		String sql=null;
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		try {
 			conn=getConnection();
 			String orgPass=u.getPassword();
-			//String shaPass=BCrypt.hashpw(orgPass, BCrypt.gensalt());
+			//String shaPass=BCrypt.(orPass,BCrypt.genSalt());
 			u.setTime_reg(timestamp);
-			sql = "INSERT INTO users VALUES(?,?,?,?,?,?,?,?)";
+			u.setUser_index(getUserMax());
+			sql = "INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?)";
 			pstmt=conn.prepareStatement(sql);
-			pstmt.setString(1, "1");
+			pstmt.setInt(1, getUserMax());
+			pstmt.setString(2, u.getUser_id());
+			pstmt.setString(3, u.getPassword());
+			pstmt.setString(4, u.getReal_name());
+			pstmt.setString(5, u.getNick_name());
+			pstmt.setString(6, u.getEmail());
+			pstmt.setTimestamp(7, timestamp);
+			pstmt.setBoolean(8, false);
+			pstmt.setDate(9, null);
+			r = sql;
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
@@ -85,4 +95,27 @@ public class UserDBBean {
 		}
 		return r;
     }
+    //로그인 메소드
+    public byte login(String id, String pw) {
+    	byte r = -1;
+    	Connection conn = null;
+        PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql=null;
+		try {
+			conn=getConnection();
+			sql="SELECT FROM users WHERE user_id=? and password=?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			pstmt.setString(2, pw);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
+				r=0; //로그인 성공!
+			}else {
+				r=1; //로그인 실패!
+			}
+		}
+    	return r;
+    }
+    
 }

@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 
 public class UserDataBean {
 private int user_index;
-private String user_id,password,real_name,email;
+private String user_id,password,real_name,email,nick_name;
 private Timestamp time_reg;
 private boolean is_available;
 private Date date_punishment;
@@ -58,5 +58,10 @@ public Date getDate_punishment() {
 public void setDate_punishment(Date date_punishment) {
 	this.date_punishment = date_punishment;
 }
-
+public String getNick_name() {
+	return email;
+}
+public void setNick_name(String nick_name) {
+	this.nick_name = nick_name;
+}
 }

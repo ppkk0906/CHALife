@@ -1,6 +1,8 @@
 package board;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +29,7 @@ public class JoinProcess extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		response.setCharacterEncoding("UTF-8");
 		response.getWriter().append("Served at: ").append(request.getContextPath()).append("/joiN");
 	}
 
@@ -35,7 +38,20 @@ public class JoinProcess extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		response.setCharacterEncoding("UTF-8");
+		requestPro(request, response);
+	}
+	private void requestPro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		UserDataBean u = new UserDataBean();
+		UserDBBean uDB = UserDBBean.getInstance();
+		u.setUser_id(request.getParameter("id"));
+		u.setPassword(request.getParameter("pw"));
+		u.setPassword(request.getParameter("real_name"));
+		u.setPassword(request.getParameter("nick_name"));
+		u.setPassword(request.getParameter("email"));
+		String result = uDB.join(u);
+		out.print(result);
 	}
 
 }

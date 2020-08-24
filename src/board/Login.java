@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,18 +41,30 @@ public class Login extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+		HttpSession session = request.getSession();
 		PrintWriter out= response.getWriter();
 		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
 		String id=request.getParameter("id");
 		String pw=request.getParameter("pw");
+		int userLoginFailed = 0;
+		if(session.getAttribute("userLoginFailed")!=null) {
+			userLoginFailed=(int)session.getAttribute("userLoginFailed");
+		}
 		if(id==null||id.equals("")||pw==null||pw.equals("")) {
 			out.println("<script>alert('아이디나 비밀번호가 누락됐습니다.'); history.back();</script>");
 		}else {
 			out.print("<br>ID input: "+id);
 			out.print("<br>PW input: "+pw);
 		}
-		request.getParameter("id");
-		request.getParameter("pw");
+		UserDBBean u = UserDBBean.getInstance();
+		byte r=u.login(id,pw);
+		if (r==0) {
+			out.print("loin successed");
+		}else if(r==1) {
+			out.print("login failed");
+			userLoginFailed++;
+			session.setAttribute("userLoginFailed", userLoginFailed);
+		}
+		response.sendRedirect(request.getContextPath()+"/main");
 	}
-
 }
