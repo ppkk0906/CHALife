@@ -142,7 +142,7 @@
 
 							<!-- Search -->
 								<section id="Search" class="alt">
-									<form method="post" action="#">
+									<form method="get" action="<%=projectPath%>/main/search">
 										<input type="text" name="query" id="query" placeholder="게시물 통합 검색" />
 									</form>
 								</section>

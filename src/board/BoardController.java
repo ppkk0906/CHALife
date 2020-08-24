@@ -1,7 +1,7 @@
 package board;
-/*
+
 import java.io.FileInputStream;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,8 +10,10 @@ import java.util.Properties;
 //import java.io.PrintWriter;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-*/
+
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -28,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class BoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	/* /property/boardCommand.properties에서 지정한 uri와 매핑한 클래스를 불러오는 코드
+	// /property/boardCommand.properties에서 지정한 uri와 매핑한 클래스를 불러오는 코드
 	    private Map<String,Object> commandMap = new HashMap<String,Object>();	
 	    
 	    public void init(ServletConfig config) throws ServletException{
@@ -65,14 +67,13 @@ public class BoardController extends HttpServlet {
 	            }
 	    	}
 	    }     
-	*/
+	
     public BoardController() {
         super();
     }
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		requestPro(request,response);
 	}
 
@@ -83,30 +84,30 @@ public class BoardController extends HttpServlet {
 	}
 	
 	private void requestPro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		String boardName=null, action=null, URI=request.getRequestURI(), path=null;
+		String firstURI="main", others=null, URI=request.getRequestURI(), path=null;
 		String projectPath=request.getContextPath();
-		
-		//URI로부터 보드명과 게시글 번호를 뽑는 코드
+		//CommandProcess com = null;
+		PrintWriter out = response.getWriter();
 		String commandRaw=URI.substring(projectPath.length()); //우선 URI를 뽑고
-		String urlPatterns="/board/"; //이 서블릿에 연결되는 URI패턴을 지정하고나서
+		String urlPatterns="/board";
 		try {
-			commandRaw=commandRaw.substring(urlPatterns.length()); // "board/" 뒷부분만 뽑아낸다
-			if(commandRaw.indexOf("/")!=-1) { //보드의 이름을 명시한 부분 뒤에 추가적으로 명시된 부분이 있다면
-				boardName = commandRaw.substring(0, commandRaw.indexOf("/")); // 첫"/"를 기준으로 앞부분을 boardName로 한다
-			}else { //URL에 보드의 이름만 지정된 경우 commandRaw를 그대로 가져다 쓴다
-				boardName = commandRaw;
+			commandRaw=commandRaw.substring(urlPatterns.length()); // "/board" 뒷부분만 뽑아낸다
+			if(commandRaw.equals("")||commandRaw.equals("/")) { //명령의 이름이 명시됐지 않았다면
+				response.sendRedirect(projectPath+"/main");
+				return;
+			}else {//명령의 이름이 명시됐다면?
+				firstURI=commandRaw.substring(1);//우선 첫번째 "/"를 잘라낸다
+				if(firstURI.lastIndexOf("/")!=-1) {// 잘라냈는데도 입력한 uri에 "/"가 하나 이상 포함된다면 
+					others=firstURI.substring(firstURI.indexOf("/")+1); // 첫"/"의 오른쪽은 action으로
+					firstURI=firstURI.substring(0,firstURI.indexOf("/")); // 첫"/"의 왼쪽은 firstURI로지정한다
+				}
 			}
-			if(commandRaw.indexOf("/")!=-1) {//뒷부분을 action으로 지정한다
-				action = commandRaw.substring(commandRaw.indexOf("/")+1);
-				if(action.indexOf("/")!=-1) {// boardName/action/*의 경우 이 *를 생략
-					action = action.substring(0,action.indexOf("/")); 
-			}}
-			if(action==null||action.equals("")) {
-				request.setAttribute("board", boardName);
+			if(others==null||others.equals("")) {
+				request.setAttribute("board", firstURI);
 				path="/bbs/list.jsp";
 			}else {
-				request.setAttribute("board", boardName);
-				request.setAttribute("articleNo", action);
+				request.setAttribute("board", firstURI);
+				request.setAttribute("articleNo", others);
 				path="/bbs/view.jsp";
 			}
 			}catch(Throwable e) {

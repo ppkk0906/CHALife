@@ -70,27 +70,33 @@ public class MainController extends HttpServlet {
     }
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		response.setCharacterEncoding("UTF-8");
+		//response.setCharacterEncoding("UTF-8");
 		requestPro(request, response);
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		response.setCharacterEncoding("UTF-8");
+		//response.setCharacterEncoding("UTF-8");
 		requestPro(request, response);
 	}
 	private void requestPro (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		String firstURI="main", others=null, URI=request.getRequestURI(), path=null;
 		String projectPath=request.getContextPath();
 		CommandProcess com = null;
-		PrintWriter out = response.getWriter();
+		RequestDispatcher dispatcher = null;
+		//PrintWriter out = response.getWriter();
 		String commandRaw=URI.substring(projectPath.length()); //우선 URI를 뽑고
 		String urlPatterns="/main";
 		try {
 			commandRaw=commandRaw.substring(urlPatterns.length()); // "/main" 뒷부분만 뽑아낸다
-			if(commandRaw.equals("")||commandRaw.equals("/")) { //명령의 이름이 명시됐지 않았다면
-			path="/bbs/main.jsp";
+			if(commandRaw.equals("")) { //명령의 이름이 명시됐지 않았다면
+			path="/main.jsp";
+			dispatcher =request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
+			return;
+			}else if(commandRaw.equals("/")){ // 명령의 이름이 없는데 뒷부분이 "/"로 끝나면 /를 없앤 페이지로 이동
+				response.sendRedirect(projectPath+"/main");
+				return;
 			}else {//명령의 이름이 명시됐다면?
 				firstURI=commandRaw.substring(1);//우선 첫번째 "/"를 잘라낸다
 				if(firstURI.lastIndexOf("/")!=-1) {// 잘라냈는데도 입력한 uri에 "/"가 하나 이상 포함된다면 
@@ -99,19 +105,22 @@ public class MainController extends HttpServlet {
 				}
 			}
 			com = (CommandProcess)commandMap.get(firstURI);
-			if(com!=null) {
+		if(com!=null) {
 			request.setAttribute("others", others);
 			path=com.requestPro(request,response); //맵핑된 클래스를 찾았다면
-			}else {
-				path="/404/"; //맵핑된 클래스를 못찾았다면
-			}
+			dispatcher =request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
+		}else{
+				//response.sendRedirect(projectPath+"/404");
+				return;
+		}
 		}catch(Throwable e) {
 			throw new ServletException(e);
 		}
+		/* //디버깅용
 		out.print("<br>path:"+path);
 		out.print("<br>firstURI:"+firstURI);
 		out.print("<br>others:"+others);
-		//RequestDispatcher dispatcher =request.getRequestDispatcher(path);
-		//dispatcher.forward(request, response);
-	}
+		*/
+		}
 }
