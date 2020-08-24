@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.naming.Context;
@@ -59,7 +60,7 @@ public class UserDBBean {
     	}catch(Exception e) {
     		e.printStackTrace();
     	}
-    	return r;
+    	return r+1;
     }
     
     //회원 가입 처리에 사용하는 메소드
@@ -76,7 +77,7 @@ public class UserDBBean {
 			//String shaPass=BCrypt.(orPass,BCrypt.genSalt());
 			u.setTime_reg(timestamp);
 			u.setUser_index(getUserMax());
-			sql = "INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?)";
+			sql = "INSERT INTO users VALUES(?,?,?,?,?,?,CURRENT_TIMESTAMP,0,null)";
 			pstmt=conn.prepareStatement(sql);
 			pstmt.setInt(1, getUserMax());
 			pstmt.setString(2, u.getUser_id());
@@ -84,9 +85,6 @@ public class UserDBBean {
 			pstmt.setString(4, u.getReal_name());
 			pstmt.setString(5, u.getNick_name());
 			pstmt.setString(6, u.getEmail());
-			pstmt.setTimestamp(7, timestamp);
-			pstmt.setBoolean(8, false);
-			pstmt.setDate(9, null);
 			r = sql;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -100,22 +98,59 @@ public class UserDBBean {
     	byte r = -1;
     	Connection conn = null;
         PreparedStatement pstmt = null;
+        PreparedStatement pstmt2 = null;
 		ResultSet rs = null;
-		String sql=null;
+		String sql=null, sql2=null;
 		try {
 			conn=getConnection();
-			sql="SELECT FROM users WHERE user_id=? and password=?";
+			sql="SELECT * FROM users WHERE user_id=? AND password=?";
 			pstmt=conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			pstmt.setString(2, pw);
 			rs=pstmt.executeQuery();
 			if(rs.next()) {
-				r=0; //로그인 성공!
+				boolean is_available=rs.getBoolean("is_available");
+				Timestamp today = new Timestamp(System.currentTimeMillis());
+				Timestamp date_punishment=getPunishmentDate(id);
+					if(is_available) { //정지를 안당했니?
+						r=0;
+					}else if(!is_available && today.after(date_punishment)) { //정지를 당했는데 오늘 풀리는 날이니?
+						sql2="UPDATE users SET is_available=1, date_punishment=CURRENT_TIMESTAMP WHERE user_id="+"'"+id+"'";
+						pstmt2=conn.prepareStatement(sql2);
+						pstmt2.executeUpdate(sql2);
+						r=0;
+					}
 			}else {
 				r=1; //로그인 실패!
 			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			closeConnection(pstmt, conn, rs);
+			if(pstmt2!=null) try {pstmt2.close();}catch(Exception ex) {ex.printStackTrace();}
 		}
     	return r;
     }
-    
+    public Timestamp getPunishmentDate(String id) {
+    	Connection conn = null;
+        PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql=null;
+		Timestamp r=null;
+		try {
+			conn=getConnection();
+			sql="SELECT date_punishment FROM users WHERE user_id=?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
+				r = rs.getTimestamp("date_punishment");
+			}
+    }catch(Exception e) {
+    	e.printStackTrace();
+    }finally {
+		closeConnection(pstmt, conn, rs);
+    }
+		return r;
+    }
 }

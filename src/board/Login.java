@@ -2,6 +2,8 @@ package board;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +34,7 @@ public class Login extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out= response.getWriter();
 		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
-		out.println("<script>alert('유효하지 않은 접근'); history.back();</script>");
+		out.println("<script>alert('올바르지 않은 접근입니다.'); history.back();</script>");
 	}
 
 	/**
@@ -47,24 +49,40 @@ public class Login extends HttpServlet {
 		String id=request.getParameter("id");
 		String pw=request.getParameter("pw");
 		int userLoginFailed = 0;
-		if(session.getAttribute("userLoginFailed")!=null) {
+		//로그인 실패 횟수 받아오기
+		if(session.getAttribute("userLoginFailed")!=null) { 
 			userLoginFailed=(int)session.getAttribute("userLoginFailed");
 		}
-		if(id==null||id.equals("")||pw==null||pw.equals("")) {
-			out.println("<script>alert('아이디나 비밀번호가 누락됐습니다.'); history.back();</script>");
+		
+		if (userLoginFailed>4) {
+			out.println("<script>alert('로그인 시도횟수를 초과하셨습니다.'); history.back();</script>");
+			return;
+		}
+		
+		if(session.getAttribute("userID")==null) {
+			if(id.equals("")||pw.equals("")) {
+				out.println("<script>alert('아이디나 비밀번호가 누락됐습니다.'); history.back();</script>");
+				return;
+			}
+			
+			UserDBBean u = UserDBBean.getInstance();
+			
+			byte r=u.login(id,pw);
+			if (r==0) {
+				//out.print("<br>로그인 성공");
+				session.setAttribute("userID", id);
+				response.sendRedirect(request.getContextPath()+"/main");
+			}else if(r==1) {
+				userLoginFailed++;
+				session.setAttribute("userLoginFailed", userLoginFailed);
+				out.print("<script>alert('ID또는 비밀번호가 틀렸습니다.\\n 로그인 시도 횟수"+userLoginFailed+"/5'); history.back();</script>");
+			}else {
+				Timestamp today = new Timestamp(System.currentTimeMillis());
+				Timestamp punishment_date = u.getPunishmentDate(id);
+				out.print("<script>alert('정지당한 유저입니다\\n아이디:"+id+"\\n오늘 날짜:"+today+"\\n정지가 풀리는 날짜:"+punishment_date+"'); history.back();</script>");
+			}
 		}else {
-			out.print("<br>ID input: "+id);
-			out.print("<br>PW input: "+pw);
-		}
-		UserDBBean u = UserDBBean.getInstance();
-		byte r=u.login(id,pw);
-		if (r==0) {
-			out.print("loin successed");
-		}else if(r==1) {
-			out.print("login failed");
-			userLoginFailed++;
-			session.setAttribute("userLoginFailed", userLoginFailed);
-		}
-		response.sendRedirect(request.getContextPath()+"/main");
+			out.print("<script>alert('이미 로그인 하셨습니다.');</script>");
+	}
 	}
 }

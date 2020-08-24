@@ -19,12 +19,19 @@
 
 						<!-- Header -->
 							<header id="header">
+							<%if(session.getAttribute("userID")==null){ %>
 							<form method=post action="<%=projectPath %>/login">
 								아이디: <input type="text" id="id" name="id" placeholder="아이디를 입력하세요" required>
 								패스워드: <input type="password" name="pw" placeholder="패스워드를 입력하세요" required>
 								<input type="submit" value="로그인">
 								<input type="button" value="회원가입" onclick="window.location.href='<%=projectPath%>/main/join';"> 
 								</form>
+								<%}else{ 
+								String userID=session.getAttribute("userID").toString();%>
+								<%=userID %>님 환영합니다
+								<input type=button value="로그아웃" onclick="window.location.href='<%=request.getContextPath()%>/logout';">
+								<input type=button value="회원정보 수정" onclick="">
+								<%} %>
 							</header>
 
 						<!-- Banner -->
