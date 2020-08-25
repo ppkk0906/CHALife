@@ -124,7 +124,7 @@ public class BoardController extends HttpServlet {
 				request.setAttribute("board", firstURI); //first URI를 게시판의 이름으로 지정
 				path="/bbs/list.jsp";
 			}else { //others에 값이 있다면?
-				System.out.println("게시글 조회 - "+ firstURI+others);
+				System.out.println("게시글 조회 - "+ firstURI+"-"+others);
 				request.setAttribute("board", firstURI); 
 				request.setAttribute("articleNo", others); //게시글 번호를 지정
 				path="/bbs/view.jsp";

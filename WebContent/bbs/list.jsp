@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%
+<%
 request.setCharacterEncoding("UTF-8");
 response.setCharacterEncoding("UTF-8");
 %>
+<%@page import="board.Bbs, board.BoardDBBean, java.util.ArrayList" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,28 +23,29 @@ response.setCharacterEncoding("UTF-8");
 <body>
 
 <%
-String board = null, query=null, list="1";
+String board = null, query=null;
+int pageNumber=1;
 
 if(request.getAttribute("board")!=null){
 	board = request.getAttribute("board").toString();
 }else if(board==null&&request.getParameter("board")!=null){
 	board = request.getParameter("board");
 }else{
-	board="none";
+	board="free";
 }
 
 if(request.getParameter("q")!=null){
 	query=request.getParameter("q");
-	out.print("검색 단어: "+board+"<br>");
+	out.print("검색 단어: "+query+"<br>");
 	}
+
 if(request.getParameter("l")!=null){
-	list=request.getParameter("l");
-	out.print("목록 범위: "+list+"<br>");
+	try{
+	pageNumber=Integer.parseInt(request.getParameter("l"));
+	}catch(Exception e){
+		System.out.println("파싱 오류");
 	}
-
-out.print("게시글 목록 표시<br>");
-out.print("게시판 이름: "+board+"<br>");
-
+}
 %>
 	<nav class="navbar navbar-default">
 		<div class="navbar-header">
@@ -71,14 +73,41 @@ out.print("게시판 이름: "+board+"<br>");
 				</thead>
 				<tbody>
 <!-- 게시글 목록 영역 -->
+					<%
+						BoardDBBean db = BoardDBBean.getInstance();
+						ArrayList<Bbs> list = db.getList(board, pageNumber);
+						for (int i = 0; i <list.size(); i++) {
+
+					%>
+					<tr>
+						<td><%=list.get(i).getBbsID() %></td>
+						<td><a href="<%=request.getContextPath() %>/board/<%=board %>/<%=list.get(i).getBbsID()%>"><%=list.get(i).getBbsTitle()%></a></td>
+						<td><%=list.get(i).getUserID() %></td>
+						<td><%=list.get(i).getBbsDate().toString().substring(0,11) + list.get(i).getBbsDate().toString().substring(11,13)+"시" +list.get(i).getBbsDate().toString().substring(14,16)+"분" %></td>
+					</tr>
+					<%
+						}
+					%>
 				</tbody>
 				</table>
 				<!-- 게시글 목록 번호 영역 -->
- <a href="<%=request.getContextPath() %>/board/write?id=<%=request.getAttribute("others").toString() %>" class="btn btn-primary pull-right">글쓰기</a>
+				<%
+				if (pageNumber !=1) {
+			%>
+				<a href="?l=<%=pageNumber - 1 %>" class="btn btn-success btn-arrow-left">이전</a>
+			<%
+				} if(db.nextPage(board, pageNumber + 1)) {
+					
+			%>
+				<a href="?l=<%=pageNumber+1%>" class="btn btn-success btn-arrow-left">다음</a>
+			<%
+				}			
+			%>
+ <a href="<%=request.getContextPath() %>/board/write/<%=board %>" class="btn btn-primary pull-right">글쓰기</a>
 		</div>
 	</div>
 	
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script src="js/bootstrap.js"></script>
+	<script src="<%=request.getContextPath() %>/js/bootstrap.js"></script>
 </body>
 </html>
