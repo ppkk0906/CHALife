@@ -93,9 +93,9 @@ public class UserDBBean {
 		}
 		return r;
     }
-    //로그인 메소드
+    //로그인 메소드 0:성공 1:ID,PW 불일치 2: 정지 3: 가입 미승인
     public byte login(String id, String pw) {
-    	byte r = -1;
+    	byte r = 0;
     	Connection conn = null;
         PreparedStatement pstmt = null;
         PreparedStatement pstmt2 = null;
@@ -112,16 +112,20 @@ public class UserDBBean {
 				boolean is_available=rs.getBoolean("is_available");
 				Timestamp today = new Timestamp(System.currentTimeMillis());
 				Timestamp date_punishment=getPunishmentDate(id);
-					if(is_available) { //정지를 안당했니?
-						r=0;
-					}else if(!is_available && today.after(date_punishment)) { //정지를 당했는데 오늘 풀리는 날이니?
-						sql2="UPDATE users SET is_available=1, date_punishment=CURRENT_TIMESTAMP WHERE user_id="+"'"+id+"'";
+					if(!is_available) { //가입승인이 안났니?
+						r=3;
+					}else if(is_available && today.after(date_punishment)) {
+						//정지를 당했는데 오늘 풀리는 날이니?
+						sql2="UPDATE users SET is_available=1, date_punishment=0 WHERE user_id=?";//+"'"+id+"'";
 						pstmt2=conn.prepareStatement(sql2);
+						pstmt2.setNString(1, id);
 						pstmt2.executeUpdate(sql2);
 						r=0;
+					}else{ //정지를 당했는데 풀리는 날짜는 아니니?
+						r=2;
 					}
 			}else {
-				r=1; //로그인 실패!
+				r=1; //아이디나 비밀번호가 안맞니?
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -1,32 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
- <%@ page import="admin.UserManager,admin.UserDataBean, java.util.Map, java.util.HashMap, java.util.Iterator, java.sql.Timestamp" %>
+<%@ page import="admin.UserManager,admin.UserDataBean, java.util.Map, java.util.HashMap, java.util.Iterator, java.sql.Timestamp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>회원 관리 - 제명</title>
+<meta charset="EUC-KR">
+<title>회원 승인 페이지</title>
 </head>
 <body>
-<%if(session.getAttribute("admin")==null){ %>
+<% if(session.getAttribute("admin")==null){ //관리자 로그인 페이지 %>
 <script>
-alert("잘못된 접근입니다");
+alert("잘못된 접근입니다.");
 history.back();
 </script>
 <%}else{
 UserManager u = UserManager.getInstance();
-Map<Integer,UserDataBean> view = u.getAllUser();
+Map<Integer,UserDataBean> view = u.getUnAcceptedUser();
 Iterator<Integer> viewKey = view.keySet().iterator();
 %>
 <a href=login.jsp>통합 관리 페이지로</a>
-<form method=post action=manage_memberProcess.jsp>
-<select name=command>
-<option value=ban>제명</option>
-<option value=unban>제명 해제</option>
-</select>
-<input type=number placeholder="제명 시간(초)" name=time>
-<input type=text placeholder="사유" name=reason>
-<input type=submit value='확인'>
+<form action=accept_memberProcess.jsp method=post>
 <table>
 <tr>
 <th></th>
@@ -37,8 +30,6 @@ Iterator<Integer> viewKey = view.keySet().iterator();
 <th>이메일</th>
 <th>가입일</th>
 <th>승인여부</th>
-<th>~까지 제명</th>
-<th>사유</th>
 </tr>
 <%
 while(viewKey.hasNext()){
@@ -49,8 +40,6 @@ while(viewKey.hasNext()){
 	String email = view.get(user_index).getEmail();
 	Timestamp reg_date = view.get(user_index).getTime_reg();
 	boolean is_available = view.get(user_index).isIs_available();
-	Timestamp date_punishment = view.get(user_index).getDate_punishment();
-	String reason_banned = view.get(user_index).getReason_banned();
 %>
 <tr>
 <td><input type=checkbox name=user_index value='<%=user_index%>'></td>
@@ -61,18 +50,10 @@ while(viewKey.hasNext()){
 <td><%=email %></td>
 <td><%=reg_date %></td>
 <td><%=is_available %></td>
-<td><%
-if(date_punishment.before(new Timestamp(System.currentTimeMillis()))){
-	out.print("x");
-	}else{
-	out.print(date_punishment);
-}%>
-</td>
-
-<td><%=reason_banned%></td>
 </tr>
-<%} %>
+<%}%>
 </table>
+<input type=submit value='체크한 유저 승인'>
 </form>
 <%}%>
 </body>

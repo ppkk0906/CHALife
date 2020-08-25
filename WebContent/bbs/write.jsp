@@ -14,8 +14,8 @@ response.setCharacterEncoding("UTF-8");
 <body>
 <%
 String board=null;
-if(request.getAttribute("board")!=null){
-	board = request.getAttribute("board").toString();
+if(request.getAttribute("others")!=null){
+	board = request.getAttribute("others").toString();
 }else if(board==null&&request.getParameter("board")!=null){
 	board = request.getParameter("board");
 }else{

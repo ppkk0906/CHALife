@@ -12,6 +12,9 @@
 alert("잘못된 접근입니다");
 history.back();
 </script>
-<%}%>
+<%}else{%>
+<a href=login.jsp>통합 관리 페이지로</a>
+
+<%} %>
 </body>
 </html>

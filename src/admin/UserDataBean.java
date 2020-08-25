@@ -1,10 +1,10 @@
-package board;
+package admin;
 
 import java.sql.Timestamp;
 
 public class UserDataBean {
 private int user_index;
-private String user_id,password,real_name,email,nick_name;
+private String user_id,password,real_name,email,nick_name, reason_banned;
 private Timestamp time_reg;
 private boolean is_available;
 private Timestamp date_punishment;
@@ -63,5 +63,10 @@ public String getNick_name() {
 public void setNick_name(String nick_name) {
 	this.nick_name = nick_name;
 }
-
+public String getReason_banned() {
+	return reason_banned;
+}
+public void setReason_banned(String reason_banned) {
+	this.reason_banned = reason_banned;
+}
 }

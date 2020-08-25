@@ -26,8 +26,9 @@
 <%}else{ //관리자 페이지
 	String admin = session.getAttribute("admin").toString();
 %>
-<%=admin %>님 환영합니다
+<%=admin %>님 환영합니다<br>
 <a href=manage_board.jsp>게시판 추가/제거</a><br>
+<a href=accept_member.jsp>회원 가입 신청 승인</a><Br>
 <a href=manage_member.jsp>회원 관리</a><Br>
 <a href=logoutProcess.jsp>로그아웃</a>
 <%} %>
