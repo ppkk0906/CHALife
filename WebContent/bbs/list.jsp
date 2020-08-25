@@ -21,7 +21,6 @@ response.setCharacterEncoding("UTF-8");
 </style>
 </head>
 <body>
-
 <%
 String board = null, query=null;
 int pageNumber=1;
@@ -56,7 +55,6 @@ if(request.getParameter("l")!=null){
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="main.jsp">자유게시판</a>
 		</div>
 		
 	</nav>
@@ -71,6 +69,7 @@ if(request.getParameter("l")!=null){
 						<th style="background-color: #eeeeee; text-align: center;">작성일</th>
 					</tr>
 				</thead>
+				
 				<tbody>
 <!-- 게시글 목록 영역 -->
 					<%
@@ -105,7 +104,9 @@ if(request.getParameter("l")!=null){
 			%>
  <a href="<%=request.getContextPath() %>/board/write/<%=board %>" class="btn btn-primary pull-right">글쓰기</a>
 		</div>
+		<jsp:include page="../leftmenu.jsp" flush="false" />
 	</div>
+
 	
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="<%=request.getContextPath() %>/js/bootstrap.js"></script>

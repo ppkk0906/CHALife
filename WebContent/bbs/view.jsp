@@ -56,13 +56,15 @@ response.setCharacterEncoding("UTF-8");
 				<span class="icon-bar"></span>	
 						
 			</button>
-			<a class="navbar-brand" href="main.jsp">JSP 게시판 웹 사이트</a>
+			<!-- <a class="navbar-brand" href="main.jsp">JSP 게시판 웹 사이트</a> -->
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navber-collapse-1">
+		<!--
 			<ul class="nav navbar-nav">
 				<li><a href="main.jsp">메인</a></li>
 				<li class="active"><a href="bbs.jsp">게시판</a></li>
 			</ul>
+			-->
 			<%
 				if(userID == null) {
 			%>
@@ -127,13 +129,37 @@ response.setCharacterEncoding("UTF-8");
 			<%
 				if(userID != null && userID.equals(bbs.getUserID())){
 			%>		
+<script>
+function del() {
+	q = confirm("이 글을 정말로 삭제하시겠습니까?");
+	
+	if(q==1){
+    // form name은?
+    var f = document.deleteForm;
+	
+    //param과 value 설정
+	var board=f.board.value;
+	var bbsID=f.bbsID.value;
+    // input태그의 값들을 전송하는 주소
+    f.action = "<%=request.getContextPath()%>/delete";
+
+    // 전송 방식 : post
+    f.method = "post"
+    f.submit();
+	}
+  };
+</script>
 				<a href="<%=request.getContextPath() %>/board/update?board=<%=board %>&bbsID=<%=bbsID %>" class="btn btn-primary">수정</a>
-				<a onclick="return confirm('정말로 삭제하시겠습니까?')" href="deleteAction.jsp?bbsID=<%=bbsID%>" class="btn btn-primary">삭제</a>
+				<form method=post action="<%=request.getContextPath() %>/delete" name=deleteForm>
+				<input type=hidden name=board value=<%=board %>>
+				<input type=hidden name=bbsID value=<%=bbsID %>>
+				<a href="javascript:void(0);" onclick="del();" class="btn btn-primary">삭제</a>
+				</form>
 			<%
 				}			
 			%>			
 		</div>
-	
+	<jsp:include page="../leftmenu.jsp" flush="false" />
 	</div>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>

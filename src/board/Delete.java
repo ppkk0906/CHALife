@@ -11,16 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class Update
+ * Servlet implementation class Delete
  */
-@WebServlet("/update")
-public class Update extends HttpServlet {
+@WebServlet("/delete")
+public class Delete extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Update() {
+    public Delete() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -47,19 +47,15 @@ public class Update extends HttpServlet {
 		String board=request.getParameter("board");
 		int bbsID=Integer.parseInt(request.getParameter("bbsID"));
 		String userID=(String) session.getAttribute("userID");
-		String title=request.getParameter("bbsTitle");
-		String content=request.getParameter("bbsContent");
 		BoardDBBean db = BoardDBBean.getInstance();
 		Bbs bbs = db.getBbs(board, bbsID);
 		String writter=bbs.getUserID();
-		System.out.println("게시글 수정 요청");
+		System.out.println("게시글 삭제 요청");
 		System.out.println("게시판: "+board);
 		System.out.println("게시글: "+bbsID);
 		System.out.println("요청자: "+userID);
 		System.out.println("작성자: "+writter);
-		System.out.println("제목: "+title);
-		System.out.println("내용");
-		System.out.println(content);
+		
 	}
 
 }

@@ -6,7 +6,7 @@
 		<title>차대 커뮤니티 사이트</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="<%=request.getContextPath() %>/assets/css/main.css" />
 	</head>
 	<body class="is-preload">
 
@@ -147,93 +147,15 @@
 					</div>
 
 				<!-- Sidebar -->
-					<div id="sidebar">
-						<div class="inner">
+				<jsp:include page="leftmenu.jsp" flush="false" />
 
-							<!-- Search -->
-								<section id="Search" class="alt">
-									<form method="get" action="<%=projectPath%>/main/search">
-										<input type="text" name="query" id="query" placeholder="게시물 통합 검색" />
-									</form>
-								</section>
-
-							<!-- Menu -->
-								<nav id="menu">
-									<header class="major">
-										<h2>CHA life Menu</h2>
-									</header>
-									<ul>
-										<li><a href='<%=projectPath%>/board/free'>자유게시판</a></li>
-										<li><a href="<%=projectPath%>/board/secret">비밀게시판</a></li>
-										<li><a href="<%=projectPath%>/board/ad_others">홍보게시판</a></li>
-										<li><a href="<%=projectPath%>/board/used">중고장터</a></li>
-										<li><a href="<%=projectPath%>/board/lecture_review">강의후기</a></li>
-										<li><a href="<%=projectPath%>/board/ad_activity">대외활동&공모전</a></li>
-										<li><a href="<%=projectPath%>/board/notice">공지사항</a></li>
-										<li>
-											<span class="opener">이용안내</span>
-											<ul>
-												<li><a href="<%=projectPath%>/board/faq">FAQ</a></li>
-												<li><a href="<%=projectPath%>/board/qna">Q&A</a></li>
-												<li><a href="<%=projectPath%>/board/suggestion">건의사항</a></li>
-										</li>
-                                            </ul>
-									</ul>
-								</nav>
-
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>CHA life TV </h2>
-									</header>
-									<div class="mini-posts">
-										<article>
-											<a href="https://www.youtube.com/watch?v=gwMa6gpoE9I" class="image"><img src="images/pic02.jpg" alt="" /></a>
-											<p>방탄소년단 'ON' Kinetic Manifesto Film : Come Prima</p>
-										</article>
-										<article>
-											<a href="https://www.youtube.com/watch?v=dOcHuqNdyZE" class="image"><img src="images/pic03.png" alt="" /></a>
-											<p>코로나19 뚫고 10년 만에 자유 찾은 벨루가 한 쌍</p>
-										</article>
-										<article>
-											<a href="https://www.youtube.com/watch?v=wnkGZh43R_s" class="image"><img src="images/pic04.jpg" alt="" /></a>
-											<p>[런닝맨] 9주년 특집 '연도별 시청률 1위 에피소드 모음' 2편</p>
-										</article>
-									</div>
-									<ul class="actions">
-										<li><a href="#" class="button">더보기</a></li>
-									</ul>
-								</section>
-
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>Get in touch</h2>
-									</header>
-									<p>차의과학대학교 학생 커뮤니티 차라이프를 방문해 주셔서 감사드립니다.</p>
-									<ul class="contact">
-										<li class="icon solid fa-phone">(031)1899-2010</li>
-										<li class="icon solid fa-home">경기도 포천시 해룡로 120<br />
-										차의과학대학교</li>
-									</ul>
-								</section>
-
-							<!-- Footer -->
-								<footer id="footer">
-									<p class="Homepage"> 홈페이지 가기 :  <a href="https://www.cha.ac.kr/">차의과학대학교</a></p>
-								</footer>
-
-						</div>
-					</div>
-
-			</div>
-
+</div>
 		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+			<script src="<%=request.getContextPath() %>/assets/js/jquery.min.js"></script>
+			<script src="<%=request.getContextPath() %>/assets/js/browser.min.js"></script>
+			<script src="<%=request.getContextPath() %>/assets/js/breakpoints.min.js"></script>
+			<script src="<%=request.getContextPath() %>/assets/js/util.js"></script>
+			<script src="<%=request.getContextPath() %>/assets/js/main.js"></script>
 
 	</body>
 </html>
