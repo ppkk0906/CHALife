@@ -93,10 +93,11 @@ function del() {
     var f = document.deleteForm;
 	
     //param과 value 설정
-	var board=f.board.value;
-	var bbsID=f.bbsID.value;
+	//var board=f.board.value;
+	//var bbsID=f.bbsID.value;
+	
     // input태그의 값들을 전송하는 주소
-    f.action = "<%=request.getContextPath()%>/delete";
+    //f.action = "";
 
     // 전송 방식 : post
     f.method = "post"

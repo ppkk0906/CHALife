@@ -58,7 +58,15 @@ window.location.href='<%=request.getContextPath()%>/main';
 <%}else{
 	u=db.getUser(userID);
 %>
-
+<script>
+function askBefore(){
+	ask=confirm("정말로 탈퇴하시겠습니까?\n 탈퇴한 아이디로는 다시 가입하실 수 없습니다");
+	if(ask==1){
+	    var f = document.deleteForm;
+	    f.submit();
+	}
+}
+</script>
 	<jsp:include page="topnav.jsp" flush="false" />
 	<div class="container">
 		<div class="col-lg-4"></div>		
@@ -83,11 +91,11 @@ window.location.href='<%=request.getContextPath()%>/main';
 					</div>
 					<input type="submit" class="btn-primary form-control" value="회원 정보 수정">					
 				</form>
-				<form method=post action="<%=projectPath %>/userDelete">
+				<form method=post action="<%=projectPath %>/userDelete" name="deleteForm">
 				<input type=hidden name=id value='<%=u.getUser_id() %>'>
 				<input type=hidden name=pw value='<%=pw %>'>
 				<br>
-				<input type="submit" onclick="var c=confirm('정말 탈퇴하시겠습니까?'); if(c==0){return;}" class="btn-primary form-control" value="회원 탈퇴">
+				<input type="button" onclick="askBefore();" class="btn-primary form-control" value="회원 탈퇴">
 				</form>	
 			</div>		
 		</div>
