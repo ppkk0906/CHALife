@@ -87,7 +87,7 @@ window.location.href='<%=request.getContextPath()%>/main';
 				<input type=hidden name=id value='<%=u.getUser_id() %>'>
 				<input type=hidden name=pw value='<%=pw %>'>
 				<br>
-				<input type="submit" onclick="confirm('정말 탈퇴하시겠습니까?');" class="btn-primary form-control" value="회원 탈퇴">
+				<input type="submit" onclick="var c=confirm('정말 탈퇴하시겠습니까?'); if(c==0){return;}" class="btn-primary form-control" value="회원 탈퇴">
 				</form>	
 			</div>		
 		</div>
