@@ -40,16 +40,22 @@ public class Write extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//한글 깨짐 방지
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+		//클래스를 불러온다
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession();
+		BoardDBBean db = BoardDBBean.getInstance();
+		//정보를 불러온다
 		String title=request.getParameter("bbsTitle");
 		String content=request.getParameter("bbsContent");
 		String board=request.getParameter("board");
 		String userID=(String)session.getAttribute("userID");
+		int result=0;
+		//브라우저에게 html 페이지로 인식시킨다
 		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
-		
+		//제목과 내용의 whitespace를 제거한다
 		title=title.trim();
 		content=content.trim();
 		/*
@@ -58,8 +64,9 @@ public class Write extends HttpServlet {
 		System.out.println("작성자-"+userID);
 		System.out.println("제목-"+title);
 		System.out.println("내용");
-		*/
 		System.out.println(content);
+		*/
+		//오류상황을 처리한다
 		if(userID==null || userID.equals("")) {
 			out.print("<script>");
 			out.print("alert('로그인 하세요'); window.location.href='./';");
@@ -84,15 +91,19 @@ public class Write extends HttpServlet {
 			out.print("</script>");
 			return;
 		}
-		BoardDBBean db = BoardDBBean.getInstance();
-		int result=0;
+		//작성을 실행한다
 		result=db.write(board, title, userID, content);
 		if(result==1) {
-			System.out.println("성공");
+			response.sendRedirect(request.getContextPath()+"/board/"+board);
+			return;
 		}else if(result==-1) {
 			System.out.println("DB오류");
+			response.sendRedirect(request.getContextPath()+"/board/"+board);
+			return;
 		}else{
 			System.out.println("쓰기 실패");
+			response.sendRedirect(request.getContextPath()+"/board/"+board);
+			return;
 		}
 	}
 

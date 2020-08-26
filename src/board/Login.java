@@ -41,13 +41,17 @@ public class Login extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//한글 깨짐 방지
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+		//클래스들 인스턴스화
 		HttpSession session = request.getSession();
 		PrintWriter out= response.getWriter();
-		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
+		//필요한 정보 받아오기
 		String id=request.getParameter("id");
 		String pw=request.getParameter("pw");
+		//html로 인식하게 만들기
+		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
 		int userLoginFailed = 0;
 		//로그인 실패 횟수 받아오기
 		if(session.getAttribute("userLoginFailed")!=null) { 
@@ -64,7 +68,7 @@ public class Login extends HttpServlet {
 				return;
 		}
 		UserDBBean u = UserDBBean.getInstance();
-		byte r=u.login(id,pw);
+		int r=u.login(id,pw);
 			if (r==0) {
 				//out.print("<br>로그인 성공");
 				session.setAttribute("userID", id);

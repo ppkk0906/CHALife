@@ -8,18 +8,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class Join
+ * Servlet implementation class UserUpdateProcess
  */
-@WebServlet("/join")
-public class JoinProcess extends HttpServlet {
+@WebServlet("/userUpdate")
+public class UserUpdateProcess extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public JoinProcess() {
+    public UserUpdateProcess() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -42,41 +43,40 @@ public class JoinProcess extends HttpServlet {
 		//한글 깨짐 방지
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		//각종 클래스들을 인스턴스화한다
+		//클래스를 불러온다
 		PrintWriter out = response.getWriter();
-		UserDataBean u = new UserDataBean();
+		HttpSession session = request.getSession();
 		UserDBBean db = UserDBBean.getInstance();
-		//값을 받아온다
+		//정보를 불러온다
 		String userID=request.getParameter("userID");
 		String userPassword=request.getParameter("userPassword");
-		String userName=request.getParameter("userName");
 		String userNick=request.getParameter("userNick");
 		String userEmail=request.getParameter("userEmail");
-		int result=0;
-		//자바스크립트를 작동시키기 위해 브라우저에게 html 페이지로 인식시킨다
+		int result=9999;
+		//브라우저에게 html 페이지로 인식시킨다
 		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
 		//요청을 처리한다
-			//우선 유저 데이터빈에 정보를 넣는다
-			u.setUser_id(userID);
-			u.setPassword(userPassword);
-			u.setReal_name(userName);
-			u.setNick_name(userNick);
-			u.setEmail(userEmail);
-			//유저 데이터빈의 준비를 완료했으니 정보를 DAO의 join 메서드에 전달한다
-			result=db.join(u);
-			if (result==1) {
-				out.println("<script>");
-				String script=String.format("alert('회원 가입에 성공했습니다.\\n관리자의 승인을 받으시면 로그인이 가능합니다'); window.location.href='%s';", 
-						request.getContextPath()+"/main");
-				out.println(script);
-				out.println("</script>");
-				return;
-			}else {
-				out.println("<script>");
-				String script="alert('회원 가입에 실패했습니다.\\n 원인으로는 중복된 아이디,닉네임,이메일이 있을 수 있습니다.'); history.back();";
-				out.println(script);
-				out.println("</script>");
-				return;
-			}
+		result=db.updateUser(userID, userPassword, userNick, userEmail);
+		if(result==0) {
+			out.print("<script>"
+					+ "alert('수정에 실패했습니다. \\n원인으로는 중복된 닉네임, 이메일이 있습니다.');"
+					+ "history.back();"
+					+"</script>");
+			return;
+		}else if(result==1) {
+			session.invalidate();
+			out.print("<script>"
+					+ "alert('수정에 성공했습니다. \\n다시 로그인하세요.');"
+					+ "window.location.href='"
+					+request.getContextPath()
+					+"/main';"
+					+"</script>");
+		}else {
+			out.print("<script>"
+					+ "alert('알 수 없는 오류입니다.');"
+					+ "history.back();"
+					+"</script>");
+		}
 	}
+
 }

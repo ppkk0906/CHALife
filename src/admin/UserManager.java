@@ -15,6 +15,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import secure.BCrypt;
+
 public class UserManager {
 	private static UserManager instance = new UserManager();
 	private UserManager() {}
@@ -127,6 +129,7 @@ public class UserManager {
     	}
     	return r;
     }
+    //회원 관리하는 메소드 command:ban, unban, delete
     public int manageUser(String command, int time, String reason, String[] users) {
     	int r=0;
     	Connection conn=null;
@@ -140,6 +143,7 @@ public class UserManager {
     	if(command.equals("ban")) {
     		try {
     			sql="UPDATE users SET date_punishment=?, reason_banned=? WHERE ";
+    			//유저가 여러명 선택된 경우를 대비하여 WHERE 뒤에 user_index와 or를 자동으로 붙인다
     			for(int i =0; i<userlen; i++) {
     				sql+="user_index="+users[i];
     				if(i+1<userlen) {
@@ -148,14 +152,11 @@ public class UserManager {
     			}
     			conn=getConnection();
     			pstmt=conn.prepareStatement(sql);
-    			
     			pstmt.setTimestamp(1, timestamp);
-    			pstmt.setString(2, reason);
-    			System.out.println(sql);
+    			pstmt.setString(2, "[정지 사유]"+reason);
     			pstmt.executeUpdate();
     		}catch(Exception e) {
     			e.printStackTrace();
-    			
     			r=1;
     		}finally {
     			closeConnection(pstmt, conn, rs);
@@ -163,6 +164,7 @@ public class UserManager {
     	}else if(command.equals("unban")){
     		try {
     			sql="UPDATE users SET date_punishment=CURRENT_TIMESTAMP, reason_banned=? WHERE ";
+    			//유저가 여러명 선택된 경우를 대비하여 WHERE 뒤에 user_index와 or를 자동으로 붙인다
     			for(int i =0; i<userlen; i++) {
     				sql+="user_index="+users[i];
     				if(i+1<userlen) {
@@ -171,7 +173,27 @@ public class UserManager {
     			}
     			conn=getConnection();
     			pstmt=conn.prepareStatement(sql);
-    			pstmt.setNString(1, reason);
+    			pstmt.setNString(1, "[해제 사유]"+reason);
+    			pstmt.executeUpdate();
+    		}catch(Exception e) {
+    			e.printStackTrace();
+    			r=1;
+    		}finally {
+    			closeConnection(pstmt, conn, rs);
+    		}
+    	}else if(command.equals("delete")) {
+    		try {
+    			sql="UPDATE users SET password=?, is_available=1, reason_banned='탈퇴한 회원' WHERE ";
+    			//유저가 여러명 선택된 경우를 대비하여 WHERE 뒤에 user_index와 or를 자동으로 붙인다
+    			for(int i =0; i<userlen; i++) {
+    				sql+="user_index="+users[i];
+    				if(i+1<userlen) {
+    					sql+=" OR ";
+    				}
+    			}
+    			conn=getConnection();
+    			pstmt=conn.prepareStatement(sql);
+    			pstmt.setNString(1, BCrypt.hashpw("pvO6Ohnv34jzK4vmrZg8uXFJxTuvMcuXE3zC7PHZT8d2wijwq6W", BCrypt.gensalt()));
     			pstmt.executeUpdate();
     		}catch(Exception e) {
     			e.printStackTrace();

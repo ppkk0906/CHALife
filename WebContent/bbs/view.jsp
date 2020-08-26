@@ -35,69 +35,24 @@ response.setCharacterEncoding("UTF-8");
 			e.printStackTrace();
 		}
 	}else if (request.getParameter("bbsID") != null) {
-		bbsID = Integer.parseInt(request.getParameter("bbsID"));
-	}
-	if (bbsID == 0){
-		out.print("<script>alert('존재하지 않는 글입니다'); window.location.href='"+request.getContextPath()+"/main'</script>");	
+		try{
+		bbsID = Integer.parseInt(request.getAttribute("articleNo").toString());
+		}catch(Exception e){
+			out.print("<script>alert('올바르지 않은 글번호입니다'); window.location.href='"+request.getContextPath()+"/main'</script>");
+			e.printStackTrace();
+		}
 	}
 	BoardDBBean db = BoardDBBean.getInstance();
 	Bbs bbs = db.getBbs(board, bbsID);
+	if (bbsID == 0||bbs.getBbsAvailable().equals("0")){
+		out.print("<script>alert('존재하지 않는 글입니다'); window.location.href='"+request.getContextPath()+"/board/"+board+"'</script>");
+	}
 	if(bbs==null){
-		out.print("게시글을 불러올 수 없습니다");
+		out.print("<script>alert('게시글을 불러올 수 없습니다'); history.back();</script>");	
 		return;
 	}
-	%>
-	<nav class="navbar navbar-default">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed"
-				data-toggle="collapse" data-target="#bs-example-navebar-collapse-1" aria-expanded="false">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>	
-				<span class="icon-bar"></span>	
-						
-			</button>
-			<!-- <a class="navbar-brand" href="main.jsp">JSP 게시판 웹 사이트</a> -->
-		</div>
-		<div class="collapse navbar-collapse" id="bs-example-navber-collapse-1">
-		<!--
-			<ul class="nav navbar-nav">
-				<li><a href="main.jsp">메인</a></li>
-				<li class="active"><a href="bbs.jsp">게시판</a></li>
-			</ul>
-			-->
-			<%
-				if(userID == null) {
-			%>
-			<ul class="nav navber-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle"
-					    data-toggle="dropdown" role="button" aria-haspopup="ture"
-						aria-expanded="false">접속하기<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<!-- <li><a href="<%//=request.getContextPath()%>/">로그인</a></li>-->
-						<li><a href="<%=request.getContextPath()%>/board/join">회원가입</a></li>
-					</ul>
-				</li>	
-			</ul>		
-			<%
-				} else {
-			%>
-			<ul class="nav navber-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle"
-					    data-toggle="dropdown" role="button" aria-haspopup="ture"
-						aria-expanded="false">회원관리<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="<%=request.getContextPath()%>/logout">로그아웃</a></li>
-					</ul>
-				</li>	
-			</ul>		
-			<%		
-				}
-			%>
-			
-		</div>
-	</nav>
+%>
+	<jsp:include page="topnavactive.jsp" flush="false" />
 	<div class="container">
 		<div class="row">
 			<table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
@@ -125,7 +80,7 @@ response.setCharacterEncoding("UTF-8");
 					</tr>
 				</tbody>
 			</table>
-			<a href="./" class="btn btn-primary">목록</a>
+			
 			<%
 				if(userID != null && userID.equals(bbs.getUserID())){
 			%>		
@@ -149,17 +104,19 @@ function del() {
 	}
   };
 </script>
-				<a href="<%=request.getContextPath() %>/board/update?board=<%=board %>&bbsID=<%=bbsID %>" class="btn btn-primary">수정</a>
 				<form method=post action="<%=request.getContextPath() %>/delete" name=deleteForm>
+				<a href="./" class="btn btn-primary">목록</a>
+				<a href="<%=request.getContextPath() %>/board/update?board=<%=board %>&bbsID=<%=bbsID %>" class="btn btn-primary">수정</a>
 				<input type=hidden name=board value=<%=board %>>
 				<input type=hidden name=bbsID value=<%=bbsID %>>
 				<a href="javascript:void(0);" onclick="del();" class="btn btn-primary">삭제</a>
 				</form>
 			<%
-				}			
+				}else{			
 			%>			
+			<a href="./" class="btn btn-primary">목록</a>			
+			<%} %>
 		</div>
-	<jsp:include page="../leftmenu.jsp" flush="false" />
 	</div>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>

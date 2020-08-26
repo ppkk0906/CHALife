@@ -42,22 +42,11 @@ if(request.getParameter("l")!=null){
 	try{
 	pageNumber=Integer.parseInt(request.getParameter("l"));
 	}catch(Exception e){
-		System.out.println("파싱 오류");
+		out.print("파싱 오류");
 	}
 }
 %>
-	<nav class="navbar navbar-default">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed"
-				data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
-				aria-expanded="false">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		
-	</nav>
+	<jsp:include page="topnavactive.jsp" flush="false" />
 	<div class="container">
 		<div class="row">
 			<table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
@@ -73,8 +62,14 @@ if(request.getParameter("l")!=null){
 				<tbody>
 <!-- 게시글 목록 영역 -->
 					<%
-						BoardDBBean db = BoardDBBean.getInstance();
-						ArrayList<Bbs> list = db.getList(board, pageNumber);
+					BoardDBBean db = BoardDBBean.getInstance();
+					ArrayList<Bbs> list=null;
+					try{
+						list = db.getList(board, pageNumber);
+					}catch(Exception e){
+						out.print("<script>alert('게시판이 존재하지 않습니다'); window.location.href='"+request.getContextPath()+"/main';</script>");
+					}
+					if(list!=null){
 						for (int i = 0; i <list.size(); i++) {
 
 					%>
@@ -100,11 +95,11 @@ if(request.getParameter("l")!=null){
 			%>
 				<a href="?l=<%=pageNumber+1%>" class="btn btn-success btn-arrow-left">다음</a>
 			<%
-				}			
+				}
+			}
 			%>
  <a href="<%=request.getContextPath() %>/board/write/<%=board %>" class="btn btn-primary pull-right">글쓰기</a>
 		</div>
-		<jsp:include page="../leftmenu.jsp" flush="false" />
 	</div>
 
 	

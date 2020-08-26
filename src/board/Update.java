@@ -40,18 +40,26 @@ public class Update extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//한글 깨짐 방지
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+		//각종 클래스들을 인스턴스화한다
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
+		BoardDBBean db = BoardDBBean.getInstance();
+		//값을 받아온다
 		String board=request.getParameter("board");
 		int bbsID=Integer.parseInt(request.getParameter("bbsID"));
 		String userID=(String) session.getAttribute("userID");
 		String title=request.getParameter("bbsTitle");
 		String content=request.getParameter("bbsContent");
-		BoardDBBean db = BoardDBBean.getInstance();
 		Bbs bbs = db.getBbs(board, bbsID);
 		String writter=bbs.getUserID();
+		int result=0;
+		//자바스크립트를 작동시키기 위해 브라우저에게 html 페이지로 인식시킨다
+		out.println("<!DOCTYPE html><meta charset='UTF-8'>");
+		//요청을 처리한다
+		/*
 		System.out.println("게시글 수정 요청");
 		System.out.println("게시판: "+board);
 		System.out.println("게시글: "+bbsID);
@@ -60,6 +68,28 @@ public class Update extends HttpServlet {
 		System.out.println("제목: "+title);
 		System.out.println("내용");
 		System.out.println(content);
+		*/
+		if(writter.equals(userID)) {
+			result=db.update(board, bbsID, title, content);
+				if(result==1) {
+					out.print("<script>"
+							+ "alert('수정을 완료했습니다.');"
+							+ "window.location.href='"+request.getContextPath()+"/board/"+board+"/"+bbsID+"';"
+							+"</script>");
+				}else {
+					out.print("<script>"
+							+ "alert('수정에 실패했습니다.');"
+							+ "window.location.href='"+request.getContextPath()+"/board/"+board+"/"+bbsID+"';"
+							+"</script>");
+					return;
+				}
+		}else {
+			out.print("<script>"
+					+ "alert('작성자와 요청자가 다릅니다.');"
+					+ "window.location.href='"+request.getContextPath()+"/board/"+board+"/"+bbsID+"';"
+					+"</script>");
+			return;
+		}
 	}
 
 }

@@ -107,7 +107,7 @@ public class BoardDBBean {
 		return -1;		
 	}
 	//처음 10개의 게시글 목록을 구하는 메소드
-	public ArrayList<Bbs> getList(String board, int pageNumber) {
+	public ArrayList<Bbs> getList(String board, int pageNumber) throws Exception {
     	Connection conn=null;
     	PreparedStatement pstmt=null;
     	ResultSet rs = null;
@@ -128,9 +128,8 @@ public class BoardDBBean {
 				bbs.setBbsAvailable(rs.getString(6));
 				list.add(bbs);
 			}
-			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		}finally{
 			closeConnection(pstmt, conn, rs);
 		}
@@ -192,7 +191,7 @@ public class BoardDBBean {
 		Connection conn=null;
     	PreparedStatement pstmt=null;
     	ResultSet rs = null;
-		String SQL = "UPDATE BBS SET bbsTitle=?, bbsContent=? WHERE bbsID=?";
+		String SQL = String.format("UPDATE board_%s SET bbsTitle=?, bbsContent=? WHERE bbsID=?",board);
 		try {
 			conn=getConnection();
 			pstmt = conn.prepareStatement(SQL);
@@ -212,12 +211,11 @@ public class BoardDBBean {
 		Connection conn=null;
     	PreparedStatement pstmt=null;
     	ResultSet rs = null;
-		String SQL = "update bbs set bbsavAilable = 0 where bbsID=?";
+		String SQL = String.format("update board_%s set bbsavAilable = 0 where bbsID=?",board);
 		try {
 			conn=getConnection();
 			pstmt = conn.prepareStatement(SQL);
-			pstmt.setString(1, board);
-			pstmt.setInt(2, bbsID);
+			pstmt.setInt(1, bbsID);
 			return pstmt.executeUpdate();
 		} catch (Exception e){
 			e.printStackTrace();

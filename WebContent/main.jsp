@@ -30,7 +30,7 @@
 								String userID=session.getAttribute("userID").toString();%>
 								<%=userID %>님 환영합니다
 								<input type=button value="로그아웃" onclick="window.location.href='<%=request.getContextPath()%>/logout';">
-								<input type=button value="회원정보 수정" onclick="">
+								<input type=button value="회원정보 수정" onclick="window.location.href='<%=request.getContextPath()%>/board/user';">
 								<%} %>
 							</header>
 
@@ -148,14 +148,15 @@
 
 				<!-- Sidebar -->
 				<jsp:include page="leftmenu.jsp" flush="false" />
-
 </div>
 		<!-- Scripts -->
-			<script src="<%=request.getContextPath() %>/assets/js/jquery.min.js"></script>
-			<script src="<%=request.getContextPath() %>/assets/js/browser.min.js"></script>
-			<script src="<%=request.getContextPath() %>/assets/js/breakpoints.min.js"></script>
-			<script src="<%=request.getContextPath() %>/assets/js/util.js"></script>
-			<script src="<%=request.getContextPath() %>/assets/js/main.js"></script>
+		<!-- 
+			<script src="<%//=request.getContextPath() %>/assets/js/jquery.min.js"></script>
+			<script src="<%//=request.getContextPath() %>/assets/js/browser.min.js"></script>
+			<script src="<%//=request.getContextPath() %>/assets/js/breakpoints.min.js"></script>
+			<script src="<%//=request.getContextPath() %>/assets/js/util.js"></script>
+			<script src="<%//=request.getContextPath() %>/assets/js/main.js"></script>
+			-->
 
 	</body>
 </html>

@@ -20,12 +20,13 @@ Iterator<Integer> viewKey = view.keySet().iterator();
 %>
 <a href=login.jsp>통합 관리 페이지로</a>
 <form method=post action=manage_memberProcess.jsp>
-<select name=command>
+<select name=command id=command>
 <option value=ban>제명</option>
 <option value=unban>제명 해제</option>
+<option value=delete>삭제</option>
 </select>
-<input type=number placeholder="제명 시간(초)" name=time>
-<input type=text placeholder="사유" name=reason>
+제명 시간(초): <input type=number placeholder="제명 시간(초)" name=time id=time value=0>
+<input type=text placeholder="사유" name=reason id=reason>
 <input type=submit value='확인'>
 <table>
 <tr>
@@ -76,4 +77,20 @@ if(date_punishment.before(new Timestamp(System.currentTimeMillis()))){
 </form>
 <%}%>
 </body>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+$("#command").on("change", function() {
+	if($("#command option:selected").val()=="ban"){
+		$("#time").removeAttr("readonly");
+		$("#reason").removeAttr("readonly");
+	}else if($("#command option:selected").val()=="unban"){
+		$("#time").attr("readonly",true);
+		$("#reason").removeAttr("readonly");
+	}else{
+		$("#time").attr("readonly",true);
+		$("#reason").attr("readonly",true);
+	}
+});
+
+</script>
 </html>
